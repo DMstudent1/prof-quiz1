@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Speciality;
 
 class TestAnswer extends Model
 {
@@ -17,7 +18,8 @@ class TestAnswer extends Model
         'test_id',
         'question_id',
         'option_id',
-        'correct',
+        'specialties_id',
+        'score',
     ];
 
     public function user(): BelongsTo
@@ -38,5 +40,10 @@ class TestAnswer extends Model
     public function option(): BelongsTo
     {
         return $this->belongsTo(QuestionOption::class);
+    }
+
+    public function speciality()
+    {
+        return $this->belongsTo(Speciality::class);
     }
 }

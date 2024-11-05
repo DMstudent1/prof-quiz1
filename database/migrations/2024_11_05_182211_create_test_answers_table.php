@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('test_answers', function (Blueprint $table) {
             $table->id();
-            $table->boolean('correct')->default(0)->nullable();
-            $table->foreignId('user_id')->nullable()->constrained();
-            $table->foreignId('test_id')->nullable()->constrained();
-            $table->foreignId('question_id')->nullable()->constrained();
-            $table->foreignId('option_id')->nullable()->references('id')->on('question_options');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('test_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('question_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('option_id')->nullable()->constrained('question_options')->onDelete('cascade');
+            $table->foreignId('specialties_id')->nullable()->constrained('specialties')->onDelete('cascade');
+            $table->unsignedTinyInteger('score')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

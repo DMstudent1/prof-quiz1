@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Speciality;
 
 class QuestionOption extends Model
 {
@@ -14,16 +15,22 @@ class QuestionOption extends Model
 
     protected $fillable = [
         'option',
-        'correct',
         'question_id',
     ];
 
-    protected $casts = [
+    /*protected $casts = [
         'correct' => 'boolean',
-    ];
+    ];*/
 
     public function question(): BelongsTo
     {
         return $this->belongsTo(Question::class);
+    }
+
+    public function speciality()
+    {
+        return $this->belongsToMany(Speciality::class, 'option_specialties')
+            ->withPivot('predisposition_level')
+            ->withTimestamps();
     }
 }

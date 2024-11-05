@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('question_options', function (Blueprint $table) {
+        Schema::create('option_specialties', function (Blueprint $table) {
             $table->id();
-            $table->string('option');
-            $table->foreignId('question_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('option_id')->constrained('question_options')->onDelete('cascade');
+            $table->foreignId('specialties_id')->constrained('specialties')->onDelete('cascade');
+            $table->unsignedTinyInteger('predisposition_level')->default(0);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('question_options');
+        Schema::dropIfExists('option_specialties');
     }
 };
