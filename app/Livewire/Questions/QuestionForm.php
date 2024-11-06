@@ -4,6 +4,8 @@ namespace App\Livewire\Questions;
 
 use Livewire\Component;
 use App\Models\Question;
+use App\Models\Specialty;
+use App\Models\OptionSpecialty;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Livewire\Features\SupportRedirects\Redirector;
@@ -13,9 +15,9 @@ class QuestionForm extends Component
     public ?Question $question = null;
 
     public string $question_text = '';
-    public string|null $code_snippet = '';
-    public string|null $answer_explanation = '';
-    public string|null $more_info_link = '';
+    public ?string $code_snippet = '';
+    public ?string $answer_explanation = '';
+    public ?string $more_info_link = '';
 
     public bool $editing = false;
 
@@ -24,88 +26,101 @@ class QuestionForm extends Component
     public function mount(Question $question): void
     {
         if ($question->exists) {
-            $this->question = $question;
-            $this->editing = true;
-            $this->question_text = $question->question_text;
-            $this->code_snippet = $question->code_snippet;
-            $this->answer_explanation = $question->answer_explanation;
-            $this->more_info_link = $question->more_info_link;
-
-            foreach ($question->questionOptions as $option) {
-                $this->questionOptions[] = [
-                    'id'      => $option->id,
-                    'option'  => $option->option,
-                    'correct' => $option->correct,
-                ];
-            }
+            $this->initializeForEditing($question);
         }
+    }
+
+    private function initializeForEditing(Question $question): void
+    {
+
+        $this->question = $question;
+        $this->editing = true;
+        $this->fill($question->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
+
+        $this->questionOptions = $question->questionOptions->map(fn($option) => [
+            'id' => $option->id,
+            'option' => $option->option,
+            'specialties' => $option->specialties->map(fn($specialty) => [
+                'specialty_id' => $specialty->id,
+                'predisposition_level' => $specialty->pivot->predisposition_level,
+            ])->toArray(),
+        ])->toArray();
     }
 
     public function addQuestionsOption(): void
     {
         $this->questionOptions[] = [
             'option' => '',
-            'correct' => false
+            'specialties' => []
         ];
     }
 
     public function removeQuestionsOption(int $index): void
     {
         unset($this->questionOptions[$index]);
-        $this->questionOptions = array_values(($this->questionOptions));
+        $this->questionOptions = array_values($this->questionOptions);
     }
 
     public function save(): Redirector|RedirectResponse
     {
         $this->validate();
 
-        if (empty($this->question)) {
-            $this->question = Question::create($this->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
-        } else {
-            $this->question->update($this->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
-        }
+        $this->question = $this->question
+            ? $this->updateQuestion()
+            : $this->createQuestion();
 
-        $this->question->questionOptions()->delete();
-
-        foreach ($this->questionOptions as $option) {
-            $this->question->questionOptions()->create($option);
-        }
+        $this->syncQuestionOptions();
 
         return to_route('questions');
     }
 
-    public function render(): View
+    private function createQuestion(): Question
     {
-        return view('livewire.questions.question-form');
+        return Question::create($this->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
+    }
+
+    private function updateQuestion(): Question
+    {
+        $this->question->update($this->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
+        return $this->question;
+    }
+
+    private function syncQuestionOptions(): void
+    {
+        $this->question->questionOptions()->delete();
+
+        foreach ($this->questionOptions as $optionData) {
+            $option = $this->question->questionOptions()->create([
+                'option' => $optionData['option']
+            ]);
+
+            foreach ($optionData['specialties'] as $specialtyData) {
+                $option->specialties()->attach($specialtyData['specialty_id'], [
+                    'predisposition_level' => $specialtyData['predisposition_level']
+                ]);
+            }
+        }
     }
 
     protected function rules(): array
     {
         return [
-            'question_text' => [
-                'string',
-                'required',
-            ],
-            'code_snippet' => [
-                'string',
-                'nullable',
-            ],
-            'answer_explanation' => [
-                'string',
-                'nullable',
-            ],
-            'more_info_link' => [
-                'url',
-                'nullable',
-            ],
-            'questionOptions' => [
-                'required',
-                'array',
-            ],
-            'questionOptions.*.option' => [
-                'required',
-                'string',
-            ],
+            'question_text' => ['string', 'required'],
+            'code_snippet' => ['string', 'nullable'],
+            'answer_explanation' => ['string', 'nullable'],
+            'more_info_link' => ['url', 'nullable'],
+            'questionOptions' => ['required', 'array'],
+            'questionOptions.*.option' => ['required', 'string'],
+            'questionOptions.*.specialties' => ['array'],
+            'questionOptions.*.specialties.*.specialty_id' => ['exists:specialities,id'],
+            'questionOptions.*.specialties.*.predisposition_level' => ['integer', 'min:1', 'max:5'], // assuming levels from 1 to 5
         ];
+    }
+
+    public function render(): View
+    {
+        return view('livewire.questions.question-form', [
+            'specialties' => Specialty::all()
+        ]);
     }
 }

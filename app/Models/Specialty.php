@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\QuestionOption;
 use App\Models\TestAnswer;
 
-class Speciality extends Model
+class Specialty extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,6 @@ class Speciality extends Model
         'name',
         'description',
     ];
-
     public function options()
     {
         return $this->belongsToMany(QuestionOption::class, 'option_specialties')

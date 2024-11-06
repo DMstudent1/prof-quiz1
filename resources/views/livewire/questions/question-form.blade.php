@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form wire:submit="save">
+                    <form wire:submit.prevent="save">
                         <div>
                             <x-input-label for="question_text" value="Question text" />
                             <x-textarea wire:model="question_text" id="question_text" class="block mt-1 w-full" type="text" name="question_text" required />
@@ -19,23 +19,43 @@
                         <div class="mt-4">
                             <x-input-label for="question_options" value="Question options"/>
                             @foreach($questionOptions as $index => $questionOption)
-                                <div class="flex mt-2">
+                                <div class="flex flex-col mt-2 space-y-2">
+                                    <!-- Option text input -->
                                     <x-text-input type="text" wire:model="questionOptions.{{ $index }}.option" class="w-full" name="questions_options_{{ $index }}" id="questions_options_{{ $index }}" autocomplete="off"/>
+                                    <x-input-error :messages="$errors->get('questionOptions.' . $index . '.option')" class="mt-2" />
 
-                                    <div class="flex items-center">
-                                        <input type="checkbox" class="mr-1 ml-4" wire:model="questionOptions.{{ $index }}.correct"> Correct
-                                        <button wire:click="removeQuestionsOption({{ $index }})" type="button" class="ml-4 rounded-md border border-transparent bg-red-200 px-4 py-2 text-xs uppercase text-red-500 hover:bg-red-300 hover:text-red-700">
-                                            Delete
-                                        </button>
+                                    <!-- Specialty selection -->
+                                    <div class="flex space-x-4">
+                                        <div class="w-1/2">
+                                            <x-input-label for="specialty_{{ $index }}" value="Specialty" />
+                                            <select wire:model="questionOptions.{{ $index }}.specialty_id" id="specialty_{{ $index }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                                <option value="">Select Specialty</option>
+                                                @foreach($specialties as $specialty)
+                                                    <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialty_id')" class="mt-2" />
+                                        </div>
+
+                                        <!-- Predisposition level input -->
+                                        <div class="w-1/2">
+                                            <x-input-label for="predisposition_level_{{ $index }}" value="Predisposition Level" />
+                                            <x-text-input type="number" wire:model="questionOptions.{{ $index }}.predisposition_level" id="predisposition_level_{{ $index }}" class="w-full" min="1" max="5" />
+                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.predisposition_level')" class="mt-2" />
+                                        </div>
                                     </div>
+
+                                    <!-- Delete option button -->
+                                    <button wire:click.prevent="removeQuestionsOption({{ $index }})" type="button" class="mt-2 rounded-md border border-transparent bg-red-200 px-4 py-2 text-xs uppercase text-red-500 hover:bg-red-300 hover:text-red-700">
+                                        Delete Option
+                                    </button>
                                 </div>
-                                <x-input-error :messages="$errors->get('questionOptions.' . $index . '.option')" class="mt-2" />
                             @endforeach
 
                             <x-input-error :messages="$errors->get('questionOptions')" class="mt-2" />
 
-                            <x-primary-button wire:click="addQuestionsOption" type="button" class="mt-2">
-                                Add
+                            <x-primary-button wire:click.prevent="addQuestionsOption" type="button" class="mt-2">
+                                Add Option
                             </x-primary-button>
                         </div>
 

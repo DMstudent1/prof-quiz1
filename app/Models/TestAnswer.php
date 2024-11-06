@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Speciality;
+use App\Models\Specialty;
 
 class TestAnswer extends Model
 {
@@ -44,6 +44,6 @@ class TestAnswer extends Model
 
     public function speciality()
     {
-        return $this->belongsTo(Speciality::class);
+        return $this->belongsTo(Specialty::class);
     }
 }

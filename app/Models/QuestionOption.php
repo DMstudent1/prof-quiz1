@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Speciality;
+use App\Models\Specialty;
 
 class QuestionOption extends Model
 {
@@ -27,9 +27,9 @@ class QuestionOption extends Model
         return $this->belongsTo(Question::class);
     }
 
-    public function speciality()
+    public function specialties()
     {
-        return $this->belongsToMany(Speciality::class, 'option_specialties')
+        return $this->belongsToMany(Specialty::class, 'option_specialties')
             ->withPivot('predisposition_level')
             ->withTimestamps();
     }
