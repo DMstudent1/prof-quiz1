@@ -10,6 +10,7 @@ use App\Livewire\Questions\QuestionForm;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\TestController;
+use App\Livewire\Specialties;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('isAdmin')->group(function () {
+        Route::get('specialties', Specialties::class)->name('specialties');
+
         Route::get('questions', QuestionList::class)->name('questions');
         Route::get('questions/create', QuestionForm::class)->name('questions.create');
         Route::get('questions/{question}', QuestionForm::class)->name('questions.edit');

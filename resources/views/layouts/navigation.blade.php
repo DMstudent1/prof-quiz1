@@ -40,6 +40,9 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('specialties')">
+                                Specialties
+                            </x-dropdown-link>
                             <x-dropdown-link :href="route('questions')">
                                 Questions
                             </x-dropdown-link>
