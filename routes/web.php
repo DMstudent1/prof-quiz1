@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('isAdmin')->group(function () {
         Route::get('specialties', SpecialtyList::class)->name('specialties');
         Route::get('specialties/create', SpecialtyForm::class)->name('specialties.create');
+        Route::get('specialties/{specialty}', SpecialtyForm::class)->name('specialties.edit');
 
         Route::get('questions', QuestionList::class)->name('questions');
         Route::get('questions/create', QuestionForm::class)->name('questions.create');

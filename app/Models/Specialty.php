@@ -17,7 +17,7 @@ class Specialty extends Model
     ];
     public function options()
     {
-        return $this->belongsToMany(QuestionOption::class, 'option_specialties')
+        return $this->belongsToMany(QuestionOption::class, 'option_specialties', 'specialty_id', 'question_option_id')
             ->withPivot('predisposition_level')
             ->withTimestamps();
     }

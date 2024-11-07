@@ -22,11 +22,3 @@ class SpecialtyList extends Component
         $specialty->delete();
     }
 }
-/*
-SpecialtyForm
-    public function delete(Question $question): void
-    {
-        abort_if(! auth()->user()->is_admin, Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $question->delete();
-    }*/

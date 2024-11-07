@@ -32,20 +32,26 @@ class QuestionForm extends Component
 
     private function initializeForEditing(Question $question): void
     {
-
         $this->question = $question;
         $this->editing = true;
+
+        // Заполняем данные для редактирования
         $this->fill($question->only(['question_text', 'code_snippet', 'answer_explanation', 'more_info_link']));
 
-        $this->questionOptions = $question->questionOptions->map(fn($option) => [
-            'id' => $option->id,
-            'option' => $option->option,
-            'specialties' => $option->specialties->map(fn($specialty) => [
-                'specialty_id' => $specialty->id,
-                'predisposition_level' => $specialty->pivot->predisposition_level,
-            ])->toArray(),
-        ])->toArray();
+        // Заполняем данные о вариантах вопросов и их связанных специальностях
+        $this->questionOptions = $question->questionOptions->map(function ($option) {
+            return [
+                'option' => $option->option,
+                'specialties' => $option->specialties->map(function ($specialty) {
+                    return [
+                        'specialty_id' => $specialty->id,
+                        'predisposition_level' => $specialty->pivot->predisposition_level
+                    ];
+                })->toArray() // Преобразуем в массив, чтобы можно было удобно работать с ним
+            ];
+        })->toArray();
     }
+
 
     public function addQuestionsOption(): void
     {
@@ -90,13 +96,15 @@ class QuestionForm extends Component
         $this->question->questionOptions()->delete();
 
         foreach ($this->questionOptions as $optionData) {
+            // Сначала создаем опцию
             $option = $this->question->questionOptions()->create([
                 'option' => $optionData['option']
             ]);
 
-            foreach ($optionData['specialties'] as $specialtyData) {
-                $option->specialties()->attach($specialtyData['specialty_id'], [
-                    'predisposition_level' => $specialtyData['predisposition_level']
+            // Если specialty_id есть, прикрепляем
+            if (!empty($optionData['specialty_id'])) {
+                $option->specialties()->attach($optionData['specialty_id'], [
+                    'predisposition_level' => $optionData['predisposition_level']
                 ]);
             }
         }

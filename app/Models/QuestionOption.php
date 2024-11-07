@@ -18,6 +18,7 @@ class QuestionOption extends Model
         'question_id',
     ];
 
+
     /*protected $casts = [
         'correct' => 'boolean',
     ];*/

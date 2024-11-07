@@ -28,20 +28,22 @@
                                     <div class="flex space-x-4">
                                         <div class="w-1/2">
                                             <x-input-label for="specialty_{{ $index }}" value="Specialty" />
-                                            <select wire:model="questionOptions.{{ $index }}.specialty_id" id="specialty_{{ $index }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                            <select wire:model="questionOptions.{{ $index }}.specialties.0.specialty_id" id="specialty_{{ $index }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                                 <option value="">Select Specialty</option>
                                                 @foreach($specialties as $specialty)
-                                                    <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                                                    <option value="{{ $specialty->id }}" @if($questionOption['specialties'][0]['specialty_id'] == $specialty->id) selected @endif>
+                                                        {{ $specialty->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
-                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialty_id')" class="mt-2" />
+                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.specialty_id')" class="mt-2" />
                                         </div>
 
                                         <!-- Predisposition level input -->
                                         <div class="w-1/2">
                                             <x-input-label for="predisposition_level_{{ $index }}" value="Predisposition Level" />
-                                            <x-text-input type="number" wire:model="questionOptions.{{ $index }}.predisposition_level" id="predisposition_level_{{ $index }}" class="w-full" min="1" max="5" />
-                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.predisposition_level')" class="mt-2" />
+                                            <x-text-input type="number" wire:model="questionOptions.{{ $index }}.specialties.0.predisposition_level" id="predisposition_level_{{ $index }}" class="w-full" min="1" max="5" />
+                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.predisposition_level')" class="mt-2" />
                                         </div>
                                     </div>
 
@@ -51,6 +53,8 @@
                                     </button>
                                 </div>
                             @endforeach
+
+
 
                             <x-input-error :messages="$errors->get('questionOptions')" class="mt-2" />
 
