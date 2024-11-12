@@ -93,6 +93,7 @@ class QuestionForm extends Component
 
     private function syncQuestionOptions(): void
     {
+        // Удаляем все существующие связи
         $this->question->questionOptions()->delete();
 
         foreach ($this->questionOptions as $optionData) {
@@ -101,11 +102,15 @@ class QuestionForm extends Component
                 'option' => $optionData['option']
             ]);
 
-            // Если specialty_id есть, прикрепляем
-            if (!empty($optionData['specialty_id'])) {
-                $option->specialties()->attach($optionData['specialty_id'], [
-                    'predisposition_level' => $optionData['predisposition_level']
-                ]);
+            // Если у опции есть специальности, прикрепляем их
+            if (!empty($optionData['specialties'])) {
+                foreach ($optionData['specialties'] as $specialtyData) {
+                    if (isset($specialtyData['specialty_id'])) {
+                        $option->specialties()->attach($specialtyData['specialty_id'], [
+                            'predisposition_level' => $specialtyData['predisposition_level']
+                        ]);
+                    }
+                }
             }
         }
     }
