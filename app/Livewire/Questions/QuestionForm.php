@@ -120,7 +120,7 @@ class QuestionForm extends Component
             'questionOptions' => ['required', 'array'],
             'questionOptions.*.option' => ['required', 'string'],
             'questionOptions.*.specialties' => ['array'],
-            'questionOptions.*.specialties.*.specialty_id' => ['exists:specialities,id'],
+            'questionOptions.*.specialties.*.specialty_id' => ['exists:specialties,id'],
             'questionOptions.*.specialties.*.predisposition_level' => ['integer', 'min:1', 'max:5'], // assuming levels from 1 to 5
         ];
     }

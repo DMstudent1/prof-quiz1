@@ -18,41 +18,47 @@
 
                         <div class="mt-4">
                             <x-input-label for="question_options" value="Question options"/>
-                            @foreach($questionOptions as $index => $questionOption)
-                                <div class="flex flex-col mt-2 space-y-2">
-                                    <!-- Option text input -->
-                                    <x-text-input type="text" wire:model="questionOptions.{{ $index }}.option" class="w-full" name="questions_options_{{ $index }}" id="questions_options_{{ $index }}" autocomplete="off"/>
-                                    <x-input-error :messages="$errors->get('questionOptions.' . $index . '.option')" class="mt-2" />
+                            <div class="mt-4">
 
-                                    <!-- Specialty selection -->
-                                    <div class="flex space-x-4">
-                                        <div class="w-1/2">
-                                            <x-input-label for="specialty_{{ $index }}" value="Specialty" />
-                                            <select wire:model="questionOptions.{{ $index }}.specialties.0.specialty_id" id="specialty_{{ $index }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                <option value="">Select Specialty</option>
-                                                @foreach($specialties as $specialty)
-                                                    <option value="{{ $specialty->id }}" @if($questionOption['specialties'][0]['specialty_id'] == $specialty->id) selected @endif>
-                                                        {{ $specialty->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.specialty_id')" class="mt-2" />
+                                @foreach($questionOptions as $index => $questionOption)
+
+                                    <div class="flex flex-col mt-2 space-y-2">
+
+                                        <!-- Option text input -->
+                                        <x-text-input type="text" wire:model="questionOptions.{{ $index }}.option" class="w-full" name="questions_options_{{ $index }}" id="questions_options_{{ $index }}" autocomplete="off"/>
+                                        <x-input-error :messages="$errors->get('questionOptions.' . $index . '.option')" class="mt-2" />
+
+                                        <!-- Specialty selection -->
+                                        <div class="flex space-x-4">
+                                            <div class="w-1/2">
+                                                <x-input-label for="specialty_{{ $index }}" value="Specialty" />
+
+                                                <select wire:model="questionOptions.{{ $index }}.specialties.0.specialty_id" id="specialty_{{ $index }}" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                                    <option value="">Select Specialty</option>
+
+                                                    @foreach($specialties as $specialty)
+                                                        <option value="{{ $specialty->id }}"
+                                                                @if(isset($questionOption['specialties'][0]) && $questionOption['specialties'][0]['specialty_id'] == $specialty->id)
+                                                                    selected
+                                                            @endif>
+                                                            {{ $specialty->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.specialty_id')" class="mt-2" />
+                                            </div>
+                                            <!-- Predisposition level input -->
+                                            <div class="w-1/2">
+                                                <x-input-label for="predisposition_level_{{ $index }}" value="Predisposition Level" />
+                                                <x-text-input type="number" wire:model="questionOptions.{{ $index }}.specialties.0.predisposition_level" id="predisposition_level_{{ $index }}" class="w-full" min="1" max="5" />
+                                                <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.predisposition_level')" class="mt-2" />
+                                            </div>
                                         </div>
 
-                                        <!-- Predisposition level input -->
-                                        <div class="w-1/2">
-                                            <x-input-label for="predisposition_level_{{ $index }}" value="Predisposition Level" />
-                                            <x-text-input type="number" wire:model="questionOptions.{{ $index }}.specialties.0.predisposition_level" id="predisposition_level_{{ $index }}" class="w-full" min="1" max="5" />
-                                            <x-input-error :messages="$errors->get('questionOptions.' . $index . '.specialties.0.predisposition_level')" class="mt-2" />
-                                        </div>
                                     </div>
+                                @endforeach
+                            </div>
 
-                                    <!-- Delete option button -->
-                                    <button wire:click.prevent="removeQuestionsOption({{ $index }})" type="button" class="mt-2 rounded-md border border-transparent bg-red-200 px-4 py-2 text-xs uppercase text-red-500 hover:bg-red-300 hover:text-red-700">
-                                        Delete Option
-                                    </button>
-                                </div>
-                            @endforeach
 
 
 
